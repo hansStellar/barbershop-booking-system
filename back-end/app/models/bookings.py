@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 class Booking(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    customer_name: str
+    name: str
     service: str
+    date: str
     time: str

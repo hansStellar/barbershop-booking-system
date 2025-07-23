@@ -21,14 +21,13 @@ export default function Booking () {
 
     const handle_submit = async (e) => {
         e.preventDefault();
-        
         try {
             const response = await Booking_Function(form_data);
+            console.log("Booking successful: ", response);
         } catch (error) {
-            console.error(err);
-
+            console.error("Booking failed: ", err.message);
         }
-
+        
         // TODO: Save to backend + send confirmation email
 
     }
