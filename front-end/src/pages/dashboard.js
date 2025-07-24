@@ -1,13 +1,13 @@
-import { Avatar } from '@/components/catalyst/avatar'
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/catalyst/dropdown'
 
+// Need this for the layout
+import { Avatar } from '@/components/catalyst/avatar'
 import {
-  Dropdown as CatalystDropdown,
-  DropdownButton as CatalystDropdownButton,
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
   DropdownDivider,
-  DropdownItem as CatalystDropdownItem,
-  DropdownLabel,
-  DropdownMenu as CatalystDropdownMenu,
+  DropdownLabel
 } from '@/components/catalyst/dropdown'
 import { Navbar, NavbarItem, NavbarSection, NavbarSpacer } from '@/components/catalyst/navbar'
 import {
@@ -32,6 +32,11 @@ import {
   ShieldCheckIcon,
   UserIcon,
 } from '@heroicons/react/16/solid'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/catalyst/table'
+import { Heading, Subheading } from '@/components/catalyst/heading'
+import { Divider } from '@/components/catalyst/divider'
+
+// Hero Icons
 import {
   Cog6ToothIcon,
   HomeIcon,
@@ -43,11 +48,15 @@ import {
   Square2StackIcon,
   TicketIcon,
 } from '@heroicons/react/20/solid'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/catalyst/table'
-import { Heading, Subheading } from '@/components/catalyst/heading'
-import { Divider } from '@/components/catalyst/divider'
 
-export default function Example() {
+// Functions 
+import { Get_Bookings } from "@/utils/Get_Bookings.js"
+import { useEffect, useState } from 'react'
+
+export default function Dashboard() {
+  // React State
+  const [bookings, set_bookings] = useState([]);
+
   const users = [
     { handle: 'u1', name: 'John Doe', email: 'john@example.com', access: 'Admin' },
     { handle: 'u2', name: 'Jane Smith', email: 'jane@example.com', access: 'Editor' },
@@ -79,9 +88,19 @@ export default function Example() {
       changeType: "increase",
     },
   ];
+
+  // Use Effect 
+  useEffect(() => {
+    // Get Bookings 
+    Get_Bookings().then((value) => {
+      set_bookings(value.data); // this is an array of objects
+    })
+  }, []);
+
   return (
-    // Sidebar Layour Here
+    // Sidebar Layout Here
     <SidebarLayout
+      // Navbar
       navbar={
         <Navbar>
           <NavbarSpacer />
@@ -124,6 +143,7 @@ export default function Example() {
           </NavbarSection>
         </Navbar>
       }
+      // Sidebar
       sidebar={
         <Sidebar>
           <SidebarHeader>
@@ -250,11 +270,11 @@ export default function Example() {
         </Sidebar>
       }
     >
-      {/* Inside Content  */}
+      {/* Inside Content */}
       <div>
         {/* Overview */}
         <div className="mb-14">
-          {/* Heading  */}
+          {/* Heading */}
           <div className="flex items-center justify-between">
             <Subheading>Overview</Subheading>
             <Dropdown>
@@ -308,14 +328,16 @@ export default function Example() {
                 <TableHeader>Name</TableHeader>
                 <TableHeader>Email</TableHeader>
                 <TableHeader>Role</TableHeader>
+                <TableHeader>Service</TableHeader>
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.handle}>
-                  <TableCell className="font-light">{user.name}</TableCell>
-                  <TableCell className="font-light">{user.email}</TableCell>
-                  <TableCell className="text-zinc-500">{user.access}</TableCell>
+              {bookings.map((book, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="font-light">{book.name}</TableCell>
+                  <TableCell className="font-light">{book.date}</TableCell>
+                  <TableCell className="text-zinc-500">{book.time}</TableCell>
+                  <TableCell className="font-light">{book.service}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
