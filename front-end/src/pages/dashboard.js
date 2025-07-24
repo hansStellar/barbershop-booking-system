@@ -1,11 +1,13 @@
 import { Avatar } from '@/components/catalyst/avatar'
+import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/catalyst/dropdown'
+
 import {
-  Dropdown,
-  DropdownButton,
+  Dropdown as CatalystDropdown,
+  DropdownButton as CatalystDropdownButton,
   DropdownDivider,
-  DropdownItem,
+  DropdownItem as CatalystDropdownItem,
   DropdownLabel,
-  DropdownMenu,
+  DropdownMenu as CatalystDropdownMenu,
 } from '@/components/catalyst/dropdown'
 import { Navbar, NavbarItem, NavbarSection, NavbarSpacer } from '@/components/catalyst/navbar'
 import {
@@ -252,16 +254,37 @@ export default function Example() {
       <div>
         {/* Overview */}
         <div className="mb-14">
-          <Subheading className="mb-6">Overview</Subheading>
-          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.title} className="rounded-lg">
-                <Divider className="mb-8" />
-                <h3 className="text-sm font-light text-zinc-300">{stat.title}</h3>
-                <p className="mt-4 text-2xl font-medium text-white">{stat.value}</p>
-                <div className="mt-4 flex items-center space-x-2">
+          {/* Heading  */}
+          <div className="flex items-center justify-between">
+            <Subheading>Overview</Subheading>
+            <Dropdown>
+              <DropdownButton outline className="text-sm text-white border-zinc-700">
+                Last quarter
+                <ChevronDownIcon className="ml-1 size-4" />
+              </DropdownButton>
+              <DropdownMenu>
+                <DropdownItem>Last week</DropdownItem>
+                <DropdownItem>Last two weeks</DropdownItem>
+                <DropdownItem>Last month</DropdownItem>
+                <DropdownItem>Last quarter</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 sm:gap-x-6 xl:gap-x-12">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.title}
+                className={`rounded-lg py-6 ${
+                  index === 0 ? 'lg:pl-0' : ''
+                } ${index === stats.length - 1 ? 'lg:pr-0' : ''} bg-zinc-900 sm:bg-transparent`}
+              >
+                <Divider className="mb-10 lg:mb-8" />
+                <h3 className="text-lg sm:text-sm font-light text-zinc-300">{stat.title}</h3>
+                <p className="mt-2 sm:mt-4 text-4xl sm:text-3xl font-medium text-white">{stat.value}</p>
+                <div className="mt-4 sm:mt-4 flex items-center space-x-2">
                   <span
-                    className={`text-xs font-medium px-2 pt-1 pb-1 rounded-sm mr-1 ${
+                    className={`text-md sm:text-sm font-medium px-2 pt-1 pb-1 rounded-sm mr-1 ${
                       stat.changeType === 'increase'
                         ? 'bg-[color-mix(in_oklab,var(--color-lime-400)_10%,transparent)] text-lime-500'
                         : 'bg-[color-mix(in_oklab,var(--color-pink-400)_10%,transparent)] text-pink-400'
@@ -269,7 +292,7 @@ export default function Example() {
                   >
                     {stat.change}
                   </span>
-                  <span className="text-xs text-zinc-500">from last week</span>
+                  <span className="text-md sm:text-sm text-zinc-500">from last week</span>
                 </div>
               </div>
             ))}
@@ -290,8 +313,8 @@ export default function Example() {
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.handle}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  <TableCell className="font-light">{user.name}</TableCell>
+                  <TableCell className="font-light">{user.email}</TableCell>
                   <TableCell className="text-zinc-500">{user.access}</TableCell>
                 </TableRow>
               ))}
