@@ -91,7 +91,9 @@ export default function Dashboard() {
 
   // Use Effect 
   useEffect(() => {
-    async function fetchBookings() {
+
+    // Get bookings functions
+    async function fetch_bookings() {
       try {
         const value = await Get_Bookings();
         set_bookings(value.data); // this is an array of objects
@@ -100,25 +102,41 @@ export default function Dashboard() {
       }
     }
 
-    // Initial fetch
-    fetchBookings();
+    // Initial booking fetch
+    fetch_bookings();
 
-    // Setup WebSocket connection
-    const socket = new WebSocket("http://localhost:8000/bookings/ws");
 
-    socket.onmessage = (event) => {
-      if (event.data === "update") {
-        fetchBookings(); // Refresh data when update is received
-      }
-    };
+    // Let alone consistent connection to the database 
+    let socket;
 
-    socket.onerror = (err) => {
-      console.error("WebSocket error:", err);
-    };
+    // 1 - This is part of the key that turns on the engine, once the front end connects to the websocket, the url below, it hooks into any change from the database
+    function connect() {
+      socket = new WebSocket("ws://localhost:8000/ws/");
 
-    return () => {
-      socket.close();
-    };
+      socket.onopen = () => {
+        console.log("🟢 WebSocket connected");
+      };
+
+      socket.onmessage = (event) => {
+        if (event.data === "update") {
+          fetch_bookings();
+        }
+      };
+
+      socket.onclose = () => {
+        console.warn("🔌 WebSocket disconnected, reconnecting...");
+        setTimeout(connect, 3000); // Reconnect after 3s
+      };
+
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        socket.close();
+      };
+    }
+
+    connect(); // Initial connect
+
+    return () => socket.close(); // Cleanup
   }, []);
 
 
