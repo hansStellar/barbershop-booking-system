@@ -91,11 +91,36 @@ export default function Dashboard() {
 
   // Use Effect 
   useEffect(() => {
-    // Get Bookings 
-    Get_Bookings().then((value) => {
-      set_bookings(value.data); // this is an array of objects
-    })
+    async function fetchBookings() {
+      try {
+        const value = await Get_Bookings();
+        set_bookings(value.data); // this is an array of objects
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+
+    // Initial fetch
+    fetchBookings();
+
+    // Setup WebSocket connection
+    const socket = new WebSocket("http://localhost:8000/bookings/ws");
+
+    socket.onmessage = (event) => {
+      if (event.data === "update") {
+        fetchBookings(); // Refresh data when update is received
+      }
+    };
+
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
+
+    return () => {
+      socket.close();
+    };
   }, []);
+
 
   return (
     // Sidebar Layout Here
@@ -108,7 +133,7 @@ export default function Dashboard() {
             <NavbarItem href="/search" aria-label="Search">
               <MagnifyingGlassIcon />
             </NavbarItem>
-            <NavbarItem href="/inbox" aria-label="Inbox">
+            <NavbarItem href="/orders" aria-label="Orders">
               <InboxIcon />
             </NavbarItem>
             <Dropdown>
@@ -175,13 +200,13 @@ export default function Dashboard() {
               </DropdownMenu>
             </Dropdown>
             <SidebarSection className="max-lg:hidden">
-              <SidebarItem href="/search">
-                <MagnifyingGlassIcon />
-                <SidebarLabel>Search</SidebarLabel>
+              <SidebarItem href="/dashboard">
+                <HomeIcon />
+                <SidebarLabel>Home</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/inbox">
-                <InboxIcon />
-                <SidebarLabel>Inbox</SidebarLabel>
+              <SidebarItem href="/orders">
+                <TicketIcon />
+                <SidebarLabel>Orders</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
           </SidebarHeader>
