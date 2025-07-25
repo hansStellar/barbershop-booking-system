@@ -1,4 +1,3 @@
-
 // Need this for the layout
 import { Avatar } from '@/components/catalyst/avatar'
 import {
@@ -50,8 +49,9 @@ import {
 } from '@heroicons/react/20/solid'
 
 // Functions 
-import { Get_Bookings } from "@/utils/Get_Bookings.js"
-import { useEffect, useState } from 'react'
+import { Get_Bookings } from "@/utils/Get_Bookings.js";
+import { useEffect, useState } from 'react';
+import { Websocket } from "@/utils/Websocket.js";
 
 export default function Dashboard() {
   // React State
@@ -105,38 +105,10 @@ export default function Dashboard() {
     // Initial booking fetch
     fetch_bookings();
 
+    // Websocket Function
+    const cleanup = Websocket(fetch_bookings);
 
-    // Let alone consistent connection to the database 
-    let socket;
-
-    // 1 - This is part of the key that turns on the engine, once the front end connects to the websocket, the url below, it hooks into any change from the database
-    function connect() {
-      socket = new WebSocket("ws://localhost:8000/ws/");
-
-      socket.onopen = () => {
-        console.log("🟢 WebSocket connected");
-      };
-
-      socket.onmessage = (event) => {
-        if (event.data === "update") {
-          fetch_bookings();
-        }
-      };
-
-      socket.onclose = () => {
-        console.warn("🔌 WebSocket disconnected, reconnecting...");
-        setTimeout(connect, 3000); // Reconnect after 3s
-      };
-
-      socket.onerror = (err) => {
-        console.error("WebSocket error:", err);
-        socket.close();
-      };
-    }
-
-    connect(); // Initial connect
-
-    return () => socket.close(); // Cleanup
+    return () => cleanup(); // This ONLY runs on unmount
   }, []);
 
 

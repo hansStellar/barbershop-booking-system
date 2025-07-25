@@ -32,21 +32,22 @@ async def websocket_endpoint(websocket: WebSocket): # Variable injected as webso
 @router.on_event("startup")
 async def start_booking_watcher():
     async def watch_bookings():
-        async with bookings_collection.watch() as stream:
-            async for change in stream:
+        async with bookings_collection.watch() as stream: # watch it's an integration from MongoDB and stream is ther actual connection to the MongoDB change Stream
+            async for change in stream: # Loop any change in the stream
                 if change["operationType"] == "insert":
                     await broadcast_booking_update()
                 if change["operationType"] == "delete":
                     await broadcast_booking_update()
     asyncio.create_task(watch_bookings())
+    # Asyncio Runs multiple things at the same time, Keep the server fast and responsive, Handle long-running operations like WebSocket connections, file IO, or watching a MongoDB change stream
 
 
 # ! WebSockets Function 
 
 # 1 - Broadcast function to notify all connected websocket clients, this is where it sends signals to the front-end, sends update because in the front-end there's a conditional where if update is received, then it will update the app
 async def broadcast_booking_update():
-    for ws in connected_clients[:]:
+    for client in connected_clients[:]:
         try:
-            await ws.send_text("update")
+            await client.send_text("update")
         except:
-            connected_clients.remove(ws)
+            connected_clients.remove(client)
