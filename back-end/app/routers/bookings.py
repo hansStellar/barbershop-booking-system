@@ -16,20 +16,20 @@ router = APIRouter(
 # Routes
 
 # 1 - Get All Bookings
-@router.get("/get_bookings", response_model=List[Booking])
+@router.get('/get_bookings', response_model=List[Booking])
 async def get_all_bookings():
     bookings = []
     bookings_database = bookings_collection.find({})
     async for booking in bookings_database:
-        booking["id"] = str(booking["_id"])
-        bookings.append(Booking(**booking))
+        booking["id"] = str(booking["_id"]) # By doing this, the ObjectId it's automatically removed, and generates a property with the id as a valid string
+        bookings.append(Booking(**booking)) # The ** breaks the booking in pieces like: Booking(id="123", name="Hans", service="Shave", date="2025-07-29", time="03:33") because Booking it's expecting it that way
     return bookings
 
 
 # 2 - Post a Booking
 @router.post("/send_book", response_model=Booking)
-async def create_booking(booking: Booking):
-    booking_dict = booking.dict()
+async def create_booking(booking: Booking): # The parameter included here is a validation expecting from the front end
+    booking_dict = booking.dict() # Converts the booking object into a python dictionary
     result = await bookings_collection.insert_one(booking_dict)
     booking_dict["id"] = str(result.inserted_id)
     return booking_dict
