@@ -20,6 +20,7 @@ import {
 } from "@/components/catalyst/dropdown";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/catalyst/button";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 // Render the dashboard layout
 Orders.getLayout = function getLayout(page) {
@@ -152,6 +153,7 @@ export default function Orders() {
               <TableHeader>Date</TableHeader>
               <TableHeader>Service</TableHeader>
               <TableHeader>Status</TableHeader>
+              <TableHeader></TableHeader>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -166,6 +168,9 @@ export default function Orders() {
                 </TableCell>
                 <TableCell className="font-light">{book.service}</TableCell>
                 <TableCell className="font-light">{book.service}</TableCell>
+                <TableCell className="font-light">
+                  <EllipsisHorizontalIcon className="w-5 h-5 text-gray-500" />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
