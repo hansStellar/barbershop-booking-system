@@ -9,3 +9,4 @@ client = AsyncIOMotorClient(MONGO_URI)
 
 db = client["book_barker"]  # use your actual database name
 bookings_collection = db["bookings"]  # use your desired collection name
+users_collection = db["users"]  # use your desired collection name
