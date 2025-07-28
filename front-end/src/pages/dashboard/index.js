@@ -1,27 +1,41 @@
 // Need this for the layout
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Get_Bookings } from "@/utils/Get_Bookings.js";
 import { Websocket } from "@/utils/Websocket.js";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/catalyst/table'
-import { Subheading } from '@/components/catalyst/heading'
-import { Divider } from '@/components/catalyst/divider'
-import DashboardLayout from '@/components/layouts/dashboard_layout.js'
 import {
-    Dropdown,
-    DropdownButton,
-    DropdownItem,
-    DropdownMenu,
-  } from '@/components/catalyst/dropdown'
-  import {
-    ChevronDownIcon,
-  } from '@heroicons/react/16/solid'
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/catalyst/table";
+import { Subheading } from "@/components/catalyst/heading";
+import { Divider } from "@/components/catalyst/divider";
+import DashboardLayout from "@/components/layouts/dashboard_layout.js";
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from "@/components/catalyst/dropdown";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
+
+import useVerifyAuth from "@/hooks/verify_auth.js";
+import { useRouter } from "next/router";
 
 // Render the dashboard layout
 Dashboard.getLayout = function getLayout(page) {
-    return <DashboardLayout>{page}</DashboardLayout>
-}
+  return <DashboardLayout>{page}</DashboardLayout>;
+};
 
 export default function Dashboard() {
+  // Router
+  const router = useRouter();
+
+  // Verifying if it's admin
+  const { is_verified, is_loading } = useVerifyAuth();
+
   // React State
   const [bookings, set_bookings] = useState([]);
   const stats = [
@@ -51,14 +65,13 @@ export default function Dashboard() {
     },
   ];
 
-  // Use Effect 
+  // Use Effect
   useEffect(() => {
-
     // Get bookings functions
     async function fetch_bookings() {
       try {
         const value = await Get_Bookings();
-        console.log(value)
+        console.log(value);
         set_bookings(value.data); // this is an array of objects
       } catch (err) {
         console.error(err.message);
@@ -74,6 +87,14 @@ export default function Dashboard() {
     return () => cleanup(); // This ONLY runs on unmount
   }, []);
 
+  if (is_loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!is_verified) {
+    router.push("/admin");
+    return null;
+  }
 
   return (
     // Inside Content
@@ -84,7 +105,10 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <Subheading>Overview</Subheading>
           <Dropdown>
-            <DropdownButton outline className="text-sm text-white border-zinc-700">
+            <DropdownButton
+              outline
+              className="text-sm text-white border-zinc-700"
+            >
               Last quarter
               <ChevronDownIcon className="ml-1 size-4" />
             </DropdownButton>
@@ -102,23 +126,29 @@ export default function Dashboard() {
             <div
               key={stat.title}
               className={`rounded-lg py-6 ${
-                index === 0 ? 'lg:pl-0' : ''
-              } ${index === stats.length - 1 ? 'lg:pr-0' : ''} bg-zinc-900 sm:bg-transparent`}
+                index === 0 ? "lg:pl-0" : ""
+              } ${index === stats.length - 1 ? "lg:pr-0" : ""} bg-zinc-900 sm:bg-transparent`}
             >
               <Divider className="mb-10 lg:mb-8" />
-              <h3 className="text-lg sm:text-sm font-light text-zinc-300">{stat.title}</h3>
-              <p className="mt-2 sm:mt-4 text-4xl sm:text-3xl font-medium text-white">{stat.value}</p>
+              <h3 className="text-lg sm:text-sm font-light text-zinc-300">
+                {stat.title}
+              </h3>
+              <p className="mt-2 sm:mt-4 text-4xl sm:text-3xl font-medium text-white">
+                {stat.value}
+              </p>
               <div className="mt-4 sm:mt-4 flex items-center space-x-2">
                 <span
                   className={`text-md sm:text-sm font-medium px-2 pt-1 pb-1 rounded-sm mr-1 ${
-                    stat.changeType === 'increase'
-                      ? 'bg-[color-mix(in_oklab,var(--color-lime-400)_10%,transparent)] text-lime-500'
-                      : 'bg-[color-mix(in_oklab,var(--color-pink-400)_10%,transparent)] text-pink-400'
+                    stat.changeType === "increase"
+                      ? "bg-[color-mix(in_oklab,var(--color-lime-400)_10%,transparent)] text-lime-500"
+                      : "bg-[color-mix(in_oklab,var(--color-pink-400)_10%,transparent)] text-pink-400"
                   }`}
                 >
                   {stat.change}
                 </span>
-                <span className="text-md sm:text-sm text-zinc-500">from last week</span>
+                <span className="text-md sm:text-sm text-zinc-500">
+                  from last week
+                </span>
               </div>
             </div>
           ))}
@@ -150,6 +180,5 @@ export default function Dashboard() {
         </Table>
       </div>
     </div>
-  )
+  );
 }
-

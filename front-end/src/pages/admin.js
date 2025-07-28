@@ -5,9 +5,21 @@ import { Field, Label } from "@/components/catalyst/fieldset";
 import { Heading } from "@/components/catalyst/heading";
 import { Input } from "@/components/catalyst/input";
 import { Strong, Text, TextLink } from "@/components/catalyst/text";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import useVerifyAuth from "@/hooks/verify_auth.js";
 
 export default function Admin() {
+  const router = useRouter();
+  const { is_verified, is_loading } = useVerifyAuth();
+
+  useEffect(() => {
+    console.log("Auth check:", { is_verified, is_loading });
+    if (!is_loading && is_verified) {
+      router.push("/dashboard");
+    }
+  }, [is_verified, is_loading]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -19,11 +31,14 @@ export default function Admin() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
     if (response.ok) {
-      console.log("Login successful");
+      const data = await response.json();
+      sessionStorage.setItem("auth_token", data.token);
+      router.push("/dashboard");
     } else {
       console.log("Login failed");
     }
