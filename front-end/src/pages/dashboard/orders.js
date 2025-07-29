@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Get_Bookings } from "@/utils/Get_Bookings.js";
+import { Get_Bookings } from "@/utils/Bookings_Functions.js";
 import { Websocket } from "@/utils/Websocket.js";
 import {
   Table,
