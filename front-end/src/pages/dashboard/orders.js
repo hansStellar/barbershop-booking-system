@@ -22,6 +22,9 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Button } from "@/components/catalyst/button";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
+// Functions
+import useVerifyAuth from "@/utils/Admin_Auth.js";
+
 // Render the dashboard layout
 Orders.getLayout = function getLayout(page) {
   return <DashboardLayout>{page}</DashboardLayout>;
@@ -29,27 +32,23 @@ Orders.getLayout = function getLayout(page) {
 
 export default function Orders() {
   const [bookings, set_bookings] = useState([]);
+  const { is_verified, is_loading } = useVerifyAuth(); // Will use this to add some spinners in the future
 
-  // Use Effect
-  useEffect(() => {
-    // Get bookings functions
-    async function fetch_bookings() {
-      try {
-        const value = await Get_Bookings();
-        console.log(value);
-        set_bookings(value.data); // this is an array of objects
-      } catch (err) {
-        console.error(err.message);
-      }
+  // Functions
+  async function fetch_bookings() {
+    try {
+      const value = await Get_Bookings();
+      set_bookings(value.data); // this is an array of objects
+    } catch (err) {
+      console.error(err.message);
     }
+  }
+  const run_web_socket = Websocket(fetch_bookings); // This function activates the background WebSocket, so any change in the database will be updated live, ONLY WILL BE TRIGGERED IF DATABASE CHANGES
 
-    // Initial booking fetch
+  // Events
+  useEffect(() => {
     fetch_bookings();
-
-    // Websocket Function
-    const cleanup = Websocket(fetch_bookings);
-
-    return () => cleanup(); // This ONLY runs on unmount
+    return () => run_web_socket(); // This ONLY runs on unmount
   }, []);
 
   return (
@@ -160,7 +159,7 @@ export default function Orders() {
             {bookings.map((book, idx) => (
               <TableRow key={idx}>
                 <TableCell className="font-light">
-                  {book.id.slice(0, 6)}
+                  {book.id.slice(0, 10)}
                 </TableCell>
                 <TableCell className="font-light">{book.name}</TableCell>
                 <TableCell className="font-light">

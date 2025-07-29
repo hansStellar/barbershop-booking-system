@@ -21,7 +21,8 @@ async def get_all_bookings():
     bookings = []
     bookings_database = bookings_collection.find({})
     async for booking in bookings_database:
-        booking["id"] = str(booking["_id"]) # By doing this, the ObjectId it's automatically removed, and generates a property with the id as a valid string
+        booking["id"] = str(booking["_id"])  # ✅ Convierte el ObjectId a string
+        del booking["_id"]  # Opcional: eliminar el campo _id original
         bookings.append(Booking(**booking)) # The ** breaks the booking in pieces like: Booking(id="123", name="Hans", service="Shave", date="2025-07-29", time="03:33") because Booking it's expecting it that way
     return bookings
 
