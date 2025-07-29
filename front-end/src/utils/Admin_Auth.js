@@ -1,5 +1,26 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+
+// auth.js
+export async function admin_login(email, password) {
+  return fetch("http://localhost:8000/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email, password }),
+  })
+    .then(async (res) => {
+      const data = await res.json();
+      sessionStorage.setItem("auth_token", data.token);
+    })
+    .catch((err) => {
+      console.log("Login failed");
+    });
+}
+
+export function admin_logout() {
+  sessionStorage.removeItem("auth_token");
+}
 
 export default function useVerifyAuth() {
   // Variables
@@ -12,7 +33,7 @@ export default function useVerifyAuth() {
   // 1 - Function to check if the client is logged in
   const check_auth = () => {
     const token = sessionStorage.getItem("auth_token");
-    const is_logged_in = !!token;
+    const is_logged_in = !!token; // If there's any value in the session storage them will return true
 
     set_is_verified(is_logged_in);
     set_is_loading(false);

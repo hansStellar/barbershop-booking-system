@@ -1,6 +1,11 @@
-import { SidebarLayout } from '@/components/catalyst/sidebar-layout'
-import { Navbar, NavbarItem, NavbarSection, NavbarSpacer } from '@/components/catalyst/navbar'
-import { Avatar } from '@/components/catalyst/avatar'
+import { SidebarLayout } from "@/components/catalyst/sidebar-layout";
+import {
+  Navbar,
+  NavbarItem,
+  NavbarSection,
+  NavbarSpacer,
+} from "@/components/catalyst/navbar";
+import { Avatar } from "@/components/catalyst/avatar";
 import {
   Dropdown,
   DropdownButton,
@@ -8,7 +13,7 @@ import {
   DropdownMenu,
   DropdownDivider,
   DropdownLabel,
-} from '@/components/catalyst/dropdown'
+} from "@/components/catalyst/dropdown";
 import {
   Sidebar,
   SidebarBody,
@@ -19,7 +24,7 @@ import {
   SidebarLabel,
   SidebarSection,
   SidebarSpacer,
-} from '@/components/catalyst/sidebar'
+} from "@/components/catalyst/sidebar";
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -29,7 +34,7 @@ import {
   PlusIcon,
   ShieldCheckIcon,
   UserIcon,
-} from '@heroicons/react/16/solid'
+} from "@heroicons/react/16/solid";
 import {
   Cog6ToothIcon,
   HomeIcon,
@@ -40,7 +45,10 @@ import {
   SparklesIcon,
   Square2StackIcon,
   TicketIcon,
-} from '@heroicons/react/20/solid'
+} from "@heroicons/react/20/solid";
+
+// Functions
+import { admin_logout } from "@/utils/Admin_Auth";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -96,7 +104,10 @@ export default function DashboardLayout({ children }) {
                 <SidebarLabel>Tailwind Labs</SidebarLabel>
                 <ChevronDownIcon />
               </DropdownButton>
-              <DropdownMenu className="min-w-80 lg:min-w-64" anchor="bottom start">
+              <DropdownMenu
+                className="min-w-80 lg:min-w-64"
+                anchor="bottom start"
+              >
                 <DropdownItem href="/teams/1/settings">
                   <Cog8ToothIcon />
                   <DropdownLabel>Settings</DropdownLabel>
@@ -107,7 +118,11 @@ export default function DashboardLayout({ children }) {
                   <DropdownLabel>Tailwind Labs</DropdownLabel>
                 </DropdownItem>
                 <DropdownItem href="/teams/2">
-                  <Avatar slot="icon" initials="WC" className="bg-purple-500 text-white" />
+                  <Avatar
+                    slot="icon"
+                    initials="WC"
+                    className="bg-purple-500 text-white"
+                  />
                   <DropdownLabel>Workcation</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
@@ -153,7 +168,9 @@ export default function DashboardLayout({ children }) {
             </SidebarSection>
             <SidebarSection className="max-lg:hidden">
               <SidebarHeading>Upcoming Events</SidebarHeading>
-              <SidebarItem href="/events/1">Bear Hug: Live in Concert</SidebarItem>
+              <SidebarItem href="/events/1">
+                Bear Hug: Live in Concert
+              </SidebarItem>
               <SidebarItem href="/events/2">Viking People</SidebarItem>
               <SidebarItem href="/events/3">Six Fingers — DJ Set</SidebarItem>
               <SidebarItem href="/events/4">We All Look The Same</SidebarItem>
@@ -174,9 +191,16 @@ export default function DashboardLayout({ children }) {
             <Dropdown>
               <DropdownButton as={SidebarItem}>
                 <span className="flex min-w-0 items-center gap-3">
-                  <Avatar src="/profile-photo.jpg" className="size-10" square alt="" />
+                  <Avatar
+                    src="/profile-photo.jpg"
+                    className="size-10"
+                    square
+                    alt=""
+                  />
                   <span className="min-w-0">
-                    <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">Erica</span>
+                    <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">
+                      Erica
+                    </span>
                     <span className="block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400">
                       erica@example.com
                     </span>
@@ -203,7 +227,11 @@ export default function DashboardLayout({ children }) {
                   <DropdownLabel>Share feedback</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
-                <DropdownItem href="/logout">
+                <DropdownItem
+                  onClick={() => {
+                    admin_logout();
+                  }}
+                >
                   <ArrowRightStartOnRectangleIcon />
                   <DropdownLabel>Sign out</DropdownLabel>
                 </DropdownItem>
@@ -213,8 +241,8 @@ export default function DashboardLayout({ children }) {
         </Sidebar>
       }
     >
-        {/* Content inside the layout */}
+      {/* Content inside the layout */}
       {children}
     </SidebarLayout>
-  )
+  );
 }

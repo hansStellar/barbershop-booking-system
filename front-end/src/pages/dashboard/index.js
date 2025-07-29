@@ -21,7 +21,7 @@ import {
 } from "@/components/catalyst/dropdown";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 
-import useVerifyAuth from "@/hooks/verify_auth.js";
+import useVerifyAuth from "@/utils/Admin_Auth.js";
 import { useRouter } from "next/router";
 
 // Render the dashboard layout
@@ -70,7 +70,7 @@ export default function Dashboard() {
       console.error(err.message);
     }
   }
-  const run_web_socket = Websocket(fetch_bookings); // This function activates the background WebSocket, so any change in the database will be updated live
+  const run_web_socket = Websocket(fetch_bookings); // This function activates the background WebSocket, so any change in the database will be updated live, ONLY WILL BE TRIGGERED IF DATABASE CHANGES
 
   // Events
   useEffect(() => {

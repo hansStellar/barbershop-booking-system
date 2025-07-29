@@ -7,7 +7,14 @@ import { Input } from "@/components/catalyst/input";
 import { Strong, Text, TextLink } from "@/components/catalyst/text";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import useVerifyAuth from "@/hooks/verify_auth.js";
+import useVerifyAuth from "@/utils/Admin_Auth.js";
+
+// Auth Functions
+import {
+  admin_login,
+  admin_logout,
+  admin_is_logged_in,
+} from "@/utils/Admin_Auth.js";
 
 export default function Admin() {
   // Variables
@@ -15,28 +22,12 @@ export default function Admin() {
 
   // Functions
   useVerifyAuth();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const email = formData.get("email");
     const password = formData.get("password");
-
-    const response = await fetch("http://localhost:8000/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      sessionStorage.setItem("auth_token", data.token);
-    } else {
-      console.log("Login failed");
-    }
+    admin_login(email, password);
   };
 
   return (
