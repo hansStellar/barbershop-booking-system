@@ -30,14 +30,9 @@ Dashboard.getLayout = function getLayout(page) {
 };
 
 export default function Dashboard() {
-  // Router
+  // Variables
   const router = useRouter();
-
-  // Verifying if it's admin
-  const { is_verified, is_loading } = useVerifyAuth();
-
-  // React State
-  const [bookings, set_bookings] = useState([]);
+  const { is_verified, is_loading } = useVerifyAuth(); // Will use this to add some spinners in the future
   const stats = [
     {
       title: "Total revenue",
@@ -64,39 +59,28 @@ export default function Dashboard() {
       changeType: "increase",
     },
   ];
+  const [bookings, set_bookings] = useState([]);
 
-  // Use Effect
-  useEffect(() => {
-    // Get bookings functions
-    async function fetch_bookings() {
-      try {
-        const value = await Get_Bookings();
-        console.log(value);
-        set_bookings(value.data); // this is an array of objects
-      } catch (err) {
-        console.error(err.message);
-      }
+  // Functions
+  async function fetch_bookings() {
+    try {
+      const value = await Get_Bookings();
+      set_bookings(value.data); // this is an array of objects
+    } catch (err) {
+      console.error(err.message);
     }
+  }
+  const run_web_socket = Websocket(fetch_bookings); // This function activates the background WebSocket, so any change in the database will be updated live
 
-    // Initial booking fetch
+  // Events
+  useEffect(() => {
     fetch_bookings();
-
-    // Websocket Function
-    const cleanup = Websocket(fetch_bookings);
-
-    return () => cleanup(); // This ONLY runs on unmount
+    return () => run_web_socket(); // This ONLY runs on unmount
   }, []);
 
-  if (is_loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!is_verified) {
-    router.push("/admin");
-    return null;
-  }
-
-  return (
+  return !is_verified ? (
+    <div>No access</div>
+  ) : (
     // Inside Content
     <div>
       {/* Overview */}

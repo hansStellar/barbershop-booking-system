@@ -10,15 +10,11 @@ import { useRouter } from "next/router";
 import useVerifyAuth from "@/hooks/verify_auth.js";
 
 export default function Admin() {
+  // Variables
   const router = useRouter();
-  const { is_verified, is_loading } = useVerifyAuth();
 
-  useEffect(() => {
-    console.log("Auth check:", { is_verified, is_loading });
-    if (!is_loading && is_verified) {
-      router.push("/dashboard");
-    }
-  }, [is_verified, is_loading]);
+  // Functions
+  useVerifyAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +34,6 @@ export default function Admin() {
     if (response.ok) {
       const data = await response.json();
       sessionStorage.setItem("auth_token", data.token);
-      router.push("/dashboard");
     } else {
       console.log("Login failed");
     }

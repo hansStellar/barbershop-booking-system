@@ -1,9 +1,8 @@
-
 export function Websocket(onUpdate) {
   let socket; // Live communication between front and back
 
-  // Function that handles the entire connection of the socket
-  function connect() { 
+  // Manages the full WebSocket connection lifecycle. Though not a React hook, it's used inside a useEffect and behaves like one: auto-connects on mount and auto-cleans on unmount.
+  function connect() {
     socket = new WebSocket("ws://localhost:8000/ws/");
 
     // ! Socket Events
@@ -14,7 +13,8 @@ export function Websocket(onUpdate) {
     };
 
     // ? Event on receiving a message from the server/back-end
-    socket.onmessage = (event) => { // This is an event that runs every time the websocket receives a message from the server
+    socket.onmessage = (event) => {
+      // This is an event that runs every time the websocket receives a message from the server
       if (event.data === "update") {
         if (typeof onUpdate === "function") {
           onUpdate(); // trigger the callback passed in
