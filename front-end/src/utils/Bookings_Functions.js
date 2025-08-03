@@ -19,9 +19,6 @@ export async function Post_Booking(value) {
       "http://localhost:8000/bookings/send_book",
       value,
     );
-
-    // Return the backend response
-    return response.data;
   } catch (error) {
     // Axios errors have a .response object
     const message = error.response?.data || error.message;

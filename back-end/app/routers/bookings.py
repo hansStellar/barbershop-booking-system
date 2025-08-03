@@ -29,8 +29,8 @@ async def get_all_bookings():
 
 # 2 - Post a Booking
 @router.post("/send_book", response_model=Booking)
-async def create_booking(booking: Booking): # The parameter included here is a validation expecting from the front end
-    booking_dict = booking.dict() # Converts the booking object into a python dictionary
+async def create_booking(booking: dict):
+    booking_dict = dict(booking) 
     result = await bookings_collection.insert_one(booking_dict)
     booking_dict["id"] = str(result.inserted_id)
     return booking_dict

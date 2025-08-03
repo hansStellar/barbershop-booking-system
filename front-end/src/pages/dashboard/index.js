@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/catalyst/table";
-import { Subheading } from "@/components/catalyst/heading";
+import { Heading, Subheading } from "@/components/catalyst/heading";
 import { Divider } from "@/components/catalyst/divider";
 import DashboardLayout from "@/components/layouts/dashboard_layout.js";
 import {
@@ -87,7 +87,7 @@ export default function Dashboard() {
       <div className="mb-14">
         {/* Heading */}
         <div className="flex items-center justify-between">
-          <Subheading>Overview</Subheading>
+          <Heading>Overview</Heading>
           <Dropdown>
             <DropdownButton
               outline

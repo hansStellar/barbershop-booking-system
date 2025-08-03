@@ -45,6 +45,7 @@ import {
   SparklesIcon,
   Square2StackIcon,
   TicketIcon,
+  BanknotesIcon,
 } from "@heroicons/react/20/solid";
 
 // Functions
@@ -98,7 +99,7 @@ export default function DashboardLayout({ children }) {
       sidebar={
         <Sidebar>
           <SidebarHeader>
-            <Dropdown>
+            {/* <Dropdown>
               <DropdownButton as={SidebarItem} className="lg:mb-2.5">
                 <Avatar src="/tailwind-logo.svg" />
                 <SidebarLabel>Tailwind Labs</SidebarLabel>
@@ -131,7 +132,7 @@ export default function DashboardLayout({ children }) {
                   <DropdownLabel>New team&hellip;</DropdownLabel>
                 </DropdownItem>
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
             <SidebarSection className="max-lg:hidden">
               <SidebarItem href="/dashboard">
                 <HomeIcon />
@@ -141,9 +142,13 @@ export default function DashboardLayout({ children }) {
                 <TicketIcon />
                 <SidebarLabel>Orders</SidebarLabel>
               </SidebarItem>
+              <SidebarItem href="/dashboard/income">
+                <BanknotesIcon />
+                <SidebarLabel>Income</SidebarLabel>
+              </SidebarItem>
             </SidebarSection>
           </SidebarHeader>
-          <SidebarBody>
+          {/* <SidebarBody>
             <SidebarSection>
               <SidebarItem href="/">
                 <HomeIcon />
@@ -186,8 +191,8 @@ export default function DashboardLayout({ children }) {
                 <SidebarLabel>Changelog</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
-          </SidebarBody>
-          <SidebarFooter className="max-lg:hidden">
+          </SidebarBody> */}
+          {/* <SidebarFooter className="max-lg:hidden">
             <Dropdown>
               <DropdownButton as={SidebarItem}>
                 <span className="flex min-w-0 items-center gap-3">
@@ -237,7 +242,7 @@ export default function DashboardLayout({ children }) {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </SidebarFooter>
+          </SidebarFooter> */}
         </Sidebar>
       }
     >

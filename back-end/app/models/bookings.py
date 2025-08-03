@@ -9,3 +9,4 @@ class Booking(BaseModel):
     service: str
     date: str
     time: str
+    price: str
