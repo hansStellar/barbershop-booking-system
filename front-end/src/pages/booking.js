@@ -11,6 +11,7 @@ export default function Booking() {
     date: "",
     time: "",
     price: "",
+    order_ref: "",
   });
 
   const handle_form_change = (value) => {
@@ -32,10 +33,16 @@ export default function Booking() {
     }
   };
 
+  const generate_order_ref = () => {
+    return Math.random().toString().slice(2, 12);
+  };
+
   const handle_submit = async (e) => {
     e.preventDefault();
     try {
-      await Post_Booking(form_data);
+      const order_ref = generate_order_ref();
+      const updated_form_data = { ...form_data, order_ref };
+      await Post_Booking(updated_form_data);
 
       // Notification booking has been successful down here
     } catch (error) {

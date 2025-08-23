@@ -25,3 +25,13 @@ export async function Post_Booking(value) {
     throw new Error(`Failed to book: ${message}`);
   }
 }
+
+export async function Delete_Booking(value) {
+  try {
+    const response = axios.post("http://localhost:8000/bookings/delete_book", {
+      order_ref: value.order_ref,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}

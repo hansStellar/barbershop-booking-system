@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Get_Bookings } from "@/utils/Bookings_Functions.js";
+import { Delete_Booking, Get_Bookings } from "@/utils/Bookings_Functions.js";
 import { Websocket } from "@/utils/Websocket.js";
 import {
   Table,
@@ -43,6 +43,15 @@ export default function Orders() {
       console.error(err.message);
     }
   }
+
+  async function delete_bookings(name) {
+    try {
+      const value = await Delete_Booking(name);
+    } catch (error) {
+      console.error(err.message);
+    }
+  }
+
   const run_web_socket = Websocket(fetch_bookings); // This function activates the background WebSocket, so any change in the database will be updated live, ONLY WILL BE TRIGGERED IF DATABASE CHANGES
 
   // Events
@@ -158,9 +167,7 @@ export default function Orders() {
           <TableBody>
             {bookings.map((book, idx) => (
               <TableRow key={idx}>
-                <TableCell className="font-light">
-                  {book.id.slice(0, 10)}
-                </TableCell>
+                <TableCell className="font-light">{book._id}</TableCell>
                 <TableCell className="font-light">{book.name}</TableCell>
                 <TableCell className="font-light">
                   {book.date}, {book.time}
@@ -168,7 +175,13 @@ export default function Orders() {
                 <TableCell className="font-light">{book.service}</TableCell>
                 <TableCell className="font-light">{book.service}</TableCell>
                 <TableCell className="font-light">
-                  <EllipsisHorizontalIcon className="w-5 h-5 text-gray-500" />
+                  {/* <EllipsisHorizontalIcon className="w-5 h-5 text-gray-500" /> */}
+                  <Button>
+                    <EllipsisHorizontalIcon
+                      onClick={() => delete_bookings(book)}
+                      className="w-5 h-5 text-gray-500"
+                    />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

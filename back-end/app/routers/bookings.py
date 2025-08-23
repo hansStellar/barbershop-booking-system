@@ -21,9 +21,7 @@ async def get_all_bookings():
     bookings = []
     bookings_database = bookings_collection.find({})
     async for booking in bookings_database:
-        booking["id"] = str(booking["_id"])  # ✅ Convierte el ObjectId a string
-        del booking["_id"]  # Opcional: eliminar el campo _id original
-        bookings.append(Booking(**booking)) # The ** breaks the booking in pieces like: Booking(id="123", name="Hans", service="Shave", date="2025-07-29", time="03:33") because Booking it's expecting it that way
+        bookings.append(Booking(**booking))
     return bookings
 
 
@@ -31,7 +29,19 @@ async def get_all_bookings():
 @router.post("/send_book", response_model=Booking)
 async def create_booking(booking: dict):
     booking_dict = dict(booking) 
-    result = await bookings_collection.insert_one(booking_dict)
-    booking_dict["id"] = str(result.inserted_id)
+    await bookings_collection.insert_one(booking_dict)
     return booking_dict
 
+# 3 - Delete a Booking
+@router.post("/delete_book")
+async def delete_booking(booking: dict):
+    print(booking)
+    order_ref = booking.get("order_ref")
+    if not order_ref:
+        raise HTTPException(status_code=400, detail="Order reference is required to delete a booking")
+
+    result = await bookings_collection.find_one_and_delete({"order_ref": order_ref})
+    if not result:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    return Booking(**result)
