@@ -48,6 +48,7 @@ import {
   BanknotesIcon,
   UsersIcon,
   Squares2X2Icon,
+  CalendarIcon,
 } from "@heroicons/react/20/solid";
 
 // Functions
@@ -155,6 +156,10 @@ export default function DashboardLayout({ children }) {
               <SidebarItem href="/dashboard/services">
                 <Squares2X2Icon />
                 <SidebarLabel>Services</SidebarLabel>
+              </SidebarItem>
+              <SidebarItem href="/dashboard/calendar">
+                <CalendarIcon />
+                <SidebarLabel>Calendar</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
           </SidebarHeader>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/layouts/dashboard_layout.js";
 import { Heading, Subheading } from "@/components/catalyst/heading";
+import { Websocket } from "@/utils/Websocket.js";
 import {
   Table,
   TableBody,
@@ -142,8 +143,11 @@ export default function Income() {
     calc_total(filtered_data);
   }
 
+  const run_web_socket = Websocket(fetch_bookings); // This function activates the background WebSocket, so any change in the database will be updated live, ONLY WILL BE TRIGGERED IF DATABASE CHANGES
+
   useEffect(() => {
     fetch_bookings();
+    return () => run_web_socket(); // This ONLY runs on unmount
   }, []);
 
   // Group bookings by date and sum prices
