@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import bookings, websocket, users
+from app.routers import bookings, websocket, users, employers, services
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -7,6 +7,8 @@ app = FastAPI()
 app.include_router(bookings.router)
 app.include_router(websocket.router)
 app.include_router(users.router)
+app.include_router(employers.router)
+app.include_router(services.router)
 
 app.add_middleware(
     CORSMiddleware,

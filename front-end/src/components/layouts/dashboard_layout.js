@@ -46,6 +46,8 @@ import {
   Square2StackIcon,
   TicketIcon,
   BanknotesIcon,
+  UsersIcon,
+  Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 
 // Functions
@@ -146,6 +148,14 @@ export default function DashboardLayout({ children }) {
                 <BanknotesIcon />
                 <SidebarLabel>Income</SidebarLabel>
               </SidebarItem>
+              <SidebarItem href="/dashboard/staff-management">
+                <UsersIcon />
+                <SidebarLabel>Staff Management</SidebarLabel>
+              </SidebarItem>
+              <SidebarItem href="/dashboard/services">
+                <Squares2X2Icon />
+                <SidebarLabel>Services</SidebarLabel>
+              </SidebarItem>
             </SidebarSection>
           </SidebarHeader>
           {/* <SidebarBody>
@@ -192,7 +202,7 @@ export default function DashboardLayout({ children }) {
               </SidebarItem>
             </SidebarSection>
           </SidebarBody> */}
-          {/* <SidebarFooter className="max-lg:hidden">
+          <SidebarFooter className="max-lg:hidden">
             <Dropdown>
               <DropdownButton as={SidebarItem}>
                 <span className="flex min-w-0 items-center gap-3">
@@ -242,7 +252,7 @@ export default function DashboardLayout({ children }) {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </SidebarFooter> */}
+          </SidebarFooter>
         </Sidebar>
       }
     >

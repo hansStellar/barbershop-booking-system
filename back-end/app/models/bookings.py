@@ -10,3 +10,4 @@ class Booking(BaseModel):
     date: str
     time: str
     price: str
+    barber_id: Optional[str]  # El barbero asignado a esa reserva

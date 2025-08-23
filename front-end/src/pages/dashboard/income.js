@@ -98,7 +98,6 @@ export default function Income() {
 
   // Calculate total income
   function calc_total(data) {
-    console.log(data, "this is the data from calc_total");
     const sum = data.reduce((acc, item) => {
       const cleanPrice = Number(String(item.price).replace(/[^0-9.-]+/g, ""));
       return acc + (cleanPrice || 0);
