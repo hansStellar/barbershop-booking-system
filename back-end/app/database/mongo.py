@@ -12,3 +12,4 @@ bookings_collection = db["bookings"]  # use your desired collection name
 users_collection = db["users"]  # use your desired collection name
 employers_collection = db["employers"]  # use your desired collection name
 services_collection = db["services"]  # use your desired collection name
+customers_collection = db["customers"]  # use your desired collection name 

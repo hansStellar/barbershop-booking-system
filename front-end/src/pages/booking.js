@@ -2,6 +2,7 @@ import { useState } from "react";
 
 // Functions
 import { Post_Booking } from "@/utils/Bookings_Functions.js";
+import { Create_Customer } from "@/utils/Customers_Functions";
 
 export default function Booking() {
   const [form_data, set_form_data] = useState({
@@ -40,9 +41,13 @@ export default function Booking() {
   const handle_submit = async (e) => {
     e.preventDefault();
     try {
+      // 1 - First create the order/booking
       const order_ref = generate_order_ref();
       const updated_form_data = { ...form_data, order_ref };
       await Post_Booking(updated_form_data);
+
+      // 2 - Then after order is created, proceed to register the customer in the database
+      await Create_Customer(updated_form_data);
 
       // Notification booking has been successful down here
     } catch (error) {

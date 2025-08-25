@@ -16,39 +16,27 @@ import {
 } from "@/components/catalyst/dropdown";
 import {
   Sidebar,
-  SidebarBody,
   SidebarFooter,
   SidebarHeader,
-  SidebarHeading,
   SidebarItem,
   SidebarLabel,
   SidebarSection,
-  SidebarSpacer,
 } from "@/components/catalyst/sidebar";
 import {
-  ArrowRightStartOnRectangleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  Cog8ToothIcon,
-  LightBulbIcon,
-  PlusIcon,
-  ShieldCheckIcon,
-  UserIcon,
-} from "@heroicons/react/16/solid";
-import {
-  Cog6ToothIcon,
   HomeIcon,
   InboxIcon,
   MagnifyingGlassIcon,
-  MegaphoneIcon,
-  QuestionMarkCircleIcon,
-  SparklesIcon,
-  Square2StackIcon,
   TicketIcon,
   BanknotesIcon,
   UsersIcon,
   Squares2X2Icon,
   CalendarIcon,
+  ShieldCheckIcon,
+  UserIcon,
+  ArrowRightStartOnRectangleIcon,
+  ChevronUpIcon,
+  Cog8ToothIcon,
+  LightBulbIcon,
 } from "@heroicons/react/20/solid";
 
 // Functions
@@ -141,7 +129,7 @@ export default function DashboardLayout({ children }) {
                 <HomeIcon />
                 <SidebarLabel>Home</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/dashboard/orders">
+              <SidebarItem href="/dashboard/bookings">
                 <TicketIcon />
                 <SidebarLabel>Orders</SidebarLabel>
               </SidebarItem>
@@ -160,6 +148,10 @@ export default function DashboardLayout({ children }) {
               <SidebarItem href="/dashboard/calendar">
                 <CalendarIcon />
                 <SidebarLabel>Calendar</SidebarLabel>
+              </SidebarItem>
+              <SidebarItem href="/dashboard/clients">
+                <UserIcon />
+                <SidebarLabel>Clients</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
           </SidebarHeader>
