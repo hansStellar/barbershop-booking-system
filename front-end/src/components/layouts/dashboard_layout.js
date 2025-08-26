@@ -153,6 +153,10 @@ export default function DashboardLayout({ children }) {
                 <UserIcon />
                 <SidebarLabel>Clients</SidebarLabel>
               </SidebarItem>
+              <SidebarItem href="/dashboard/settings">
+                <Cog8ToothIcon />
+                <SidebarLabel>Settings</SidebarLabel>
+              </SidebarItem>
             </SidebarSection>
           </SidebarHeader>
           {/* <SidebarBody>

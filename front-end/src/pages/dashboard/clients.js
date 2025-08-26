@@ -9,10 +9,9 @@ import {
 
 import { Websocket } from "@/utils/Websocket";
 import DashboardLayout from "@/components/layouts/dashboard_layout";
-import { Get_Bookings } from "@/utils/Bookings_Functions.js";
 import { useEffect, useState } from "react";
-import { Get_Employers } from "@/utils/Employers_Functions";
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
+import { Get_Customers } from "@/utils/Customers_Functions";
 
 Clients.getLayout = function getLayout(page) {
   return <DashboardLayout>{page}</DashboardLayout>;
@@ -20,24 +19,24 @@ Clients.getLayout = function getLayout(page) {
 
 export default function Clients() {
   // Variables
-  const [bookings, set_bookings] = useState([]);
+  const [customers, set_customers] = useState([]);
 
   // Functions
-  async function fetch_clients() {
+  async function fetch_customers() {
     try {
-      const value = await Get_Employers();
-      set_bookings(value.data); // this is an array of objects
-      console.log(bookings);
+      const value = await Get_Customers();
+      set_customers(value.data); // this is an array of objects
+      console.log(customers);
     } catch (err) {
       console.error(err.message);
     }
   }
 
-  const run_web_socket = Websocket(fetch_clients); // This function activates the background WebSocket, so any change in the database will be updated live, ONLY WILL BE TRIGGERED IF DATABASE CHANGES
+  const run_web_socket = Websocket(fetch_customers); // This function activates the background WebSocket, so any change in the database will be updated live, ONLY WILL BE TRIGGERED IF DATABASE CHANGES
 
   // Events
   useEffect(() => {
-    fetch_clients();
+    fetch_customers();
     return () => run_web_socket(); // This ONLY runs on unmount
   }, []);
 
@@ -47,27 +46,23 @@ export default function Clients() {
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeader>ID</TableHeader>
             <TableHeader>Name</TableHeader>
             <TableHeader>Email</TableHeader>
-            <TableHeader>Services</TableHeader>
-            <TableHeader>Availability</TableHeader>
-            <TableHeader></TableHeader>
+            <TableHeader>Contact Number</TableHeader>
+            <TableHeader>Orders</TableHeader>
+            <TableHeader>It's a member?</TableHeader>
           </TableRow>
         </TableHead>
         <TableBody>
-          {bookings.map((member) => (
-            <TableRow key={member.id}>
-              <TableCell>{member.id}</TableCell>
-              <TableCell>{member.name}</TableCell>
-              <TableCell>{member.email}</TableCell>
-              <TableCell>{member.services.join(", ")}</TableCell>
+          {customers.map((customer) => (
+            <TableRow key={customer.customer_id}>
+              <TableCell>{customer.name}</TableCell>
+              <TableCell>{customer.email}</TableCell>
               <TableCell>
-                {member.available ? "Available" : "Unavailable"}
+                {customer.number ? customer.number : "Number not provided"}
               </TableCell>
-              <TableCell>
-                <EllipsisHorizontalIcon className="w-5 h-5 text-gray-500" />
-              </TableCell>
+              <TableCell>{customer.orders}</TableCell>
+              <TableCell>{customer.its_registered ? "Yes" : "No"}</TableCell>
             </TableRow>
           ))}
         </TableBody>

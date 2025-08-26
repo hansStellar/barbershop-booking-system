@@ -16,6 +16,15 @@ async def create_customer(customer: Customers):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error ocurred: {str(e)}")
     
+@router.get("/get_customers")
+async def get_customers():
+    customers = []
+    customers_database = customers_collection.find({})
+    async for customer in customers_database:
+        customers.append(Customers(**customer))
+    return customers
+
+    
 @router.post("/get_customer")
 async def get_customer(data: dict = Body(...)):
     customer_email = data.get("customer_email")
