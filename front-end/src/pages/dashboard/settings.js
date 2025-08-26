@@ -5,8 +5,13 @@ import {
   Add_Holiday,
   Remove_Holiday,
 } from "@/utils/Store_Functions";
+import DashboardLayout from "@/components/layouts/dashboard_layout";
 
-const Settings = () => {
+Settings.getLayout = function getLayout(page) {
+  return <DashboardLayout>{page}</DashboardLayout>;
+};
+
+export default function Settings() {
   const [opening_time, set_opening_time] = useState("");
   const [closing_time, set_closing_time] = useState("");
   const [holidays, set_holidays] = useState([]);
@@ -106,6 +111,4 @@ const Settings = () => {
       </div>
     </div>
   );
-};
-
-export default Settings;
+}
