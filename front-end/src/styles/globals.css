@@ -1,5 +1,46 @@
 @import "tailwindcss";
 
+@theme {
+  --text-h1: 50px;
+}
+
 body {
   background-color: #18181b;
+  font-family: "Crimson Text", sans-serif;
+}
+
+.bebas_font {
+  font-family: "Bebas Neue", sans-serif;
+}
+
+.crimson_font {
+  font-family: "Crimson Text", sans-serif;
+}
+
+/* Fonts */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Bebas Neue", sans-serif;
+}
+
+/* Buttons */
+.btn {
+  padding: 4px 20px 6px;
+  border-radius: 10px;
+}
+
+.btn-large {
+  padding: 8px 22px 10px;
+  font-size: 1.2rem;
+}
+
+.btn-primary {
+  background: red;
+}
+
+.btn-secondary {
+  background: blue;
 }
