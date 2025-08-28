@@ -21,6 +21,9 @@ import {
   SidebarItem,
   SidebarLabel,
   SidebarSection,
+  SidebarBody,
+  SidebarHeading,
+  SidebarSpacer,
 } from "@/components/catalyst/sidebar";
 import {
   HomeIcon,
@@ -37,6 +40,13 @@ import {
   ChevronUpIcon,
   Cog8ToothIcon,
   LightBulbIcon,
+  Square2StackIcon,
+  Cog6ToothIcon,
+  MegaphoneIcon,
+  QuestionMarkCircleIcon,
+  SparklesIcon,
+  ChevronDownIcon,
+  PlusIcon,
 } from "@heroicons/react/20/solid";
 
 // Functions
@@ -89,8 +99,9 @@ export default function DashboardLayout({ children }) {
       }
       sidebar={
         <Sidebar>
+          {/* Sidebar Header */}
           <SidebarHeader>
-            {/* <Dropdown>
+            <Dropdown>
               <DropdownButton as={SidebarItem} className="lg:mb-2.5">
                 <Avatar src="/tailwind-logo.svg" />
                 <SidebarLabel>Tailwind Labs</SidebarLabel>
@@ -123,8 +134,13 @@ export default function DashboardLayout({ children }) {
                   <DropdownLabel>New team&hellip;</DropdownLabel>
                 </DropdownItem>
               </DropdownMenu>
-            </Dropdown> */}
+            </Dropdown>
+          </SidebarHeader>
+          {/* Sidebar Body */}
+          <SidebarBody>
+            {/* Barbershop Control */}
             <SidebarSection className="max-lg:hidden">
+              <SidebarHeading>Barbershop Control</SidebarHeading>
               <SidebarItem href="/dashboard">
                 <HomeIcon />
                 <SidebarLabel>Home</SidebarLabel>
@@ -158,51 +174,20 @@ export default function DashboardLayout({ children }) {
                 <SidebarLabel>Settings</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
-          </SidebarHeader>
-          {/* <SidebarBody>
+            {/* Barbershop Online Shop */}
             <SidebarSection>
-              <SidebarItem href="/">
+              <SidebarHeading>Online Shop</SidebarHeading>
+              <SidebarItem href="/dashboard/shop_categories">
                 <HomeIcon />
-                <SidebarLabel>Home</SidebarLabel>
+                <SidebarLabel>Categories</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/events">
+              <SidebarItem href="/dashboard/products">
                 <Square2StackIcon />
-                <SidebarLabel>Events</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem href="/orders">
-                <TicketIcon />
-                <SidebarLabel>Orders</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem href="/settings">
-                <Cog6ToothIcon />
-                <SidebarLabel>Settings</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem href="/broadcasts">
-                <MegaphoneIcon />
-                <SidebarLabel>Broadcasts</SidebarLabel>
+                <SidebarLabel>Products</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
-            <SidebarSection className="max-lg:hidden">
-              <SidebarHeading>Upcoming Events</SidebarHeading>
-              <SidebarItem href="/events/1">
-                Bear Hug: Live in Concert
-              </SidebarItem>
-              <SidebarItem href="/events/2">Viking People</SidebarItem>
-              <SidebarItem href="/events/3">Six Fingers — DJ Set</SidebarItem>
-              <SidebarItem href="/events/4">We All Look The Same</SidebarItem>
-            </SidebarSection>
-            <SidebarSpacer />
-            <SidebarSection>
-              <SidebarItem href="/support">
-                <QuestionMarkCircleIcon />
-                <SidebarLabel>Support</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem href="/changelog">
-                <SparklesIcon />
-                <SidebarLabel>Changelog</SidebarLabel>
-              </SidebarItem>
-            </SidebarSection>
-          </SidebarBody> */}
+          </SidebarBody>
+          {/* Sidebar Footer */}
           <SidebarFooter className="max-lg:hidden">
             <Dropdown>
               <DropdownButton as={SidebarItem}>
