@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --text-h1: 50px;
+  --text-h1: 70px;
+  --text-h2: 30px;
+  --font-bebas: "Bebas Neue", sans-serif;
+  --font-crimson: "Crimson Text", serif;
 }
 
 body {
@@ -24,6 +27,11 @@ h3,
 h4,
 h5 {
   font-family: "Bebas Neue", sans-serif;
+  line-height: normal !important;
+}
+
+p {
+  line-height: normal !important;
 }
 
 /* Buttons */
