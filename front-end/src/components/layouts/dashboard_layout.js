@@ -181,7 +181,7 @@ export default function DashboardLayout({ children }) {
                 <HomeIcon />
                 <SidebarLabel>Categories</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/dashboard/products">
+              <SidebarItem href="/dashboard/shop_products">
                 <Square2StackIcon />
                 <SidebarLabel>Products</SidebarLabel>
               </SidebarItem>
