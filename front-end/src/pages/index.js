@@ -1,22 +1,62 @@
+// Next
 import Image from "next/image";
+import Link from "next/link";
+
+// React
 import { useEffect, useState } from "react";
+
+// Manual Functions
 import { Get_Services } from "@/utils/Services_Functions";
+import { Get_Categories } from "@/utils/Shop_Categories_Functions";
+import { Get_All_Products } from "@/utils/Shop_Products_Functions";
 
 export default function Home() {
+  // ======================
+  // 🧠 State Management
+  // ======================
   const [services, set_services] = useState([]);
+  const [categories, set_categories] = useState([]);
+  const [products, set_products] = useState([]);
   const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  useEffect(() => {
-    async function fetch_services() {
-      try {
-        const data = await Get_Services();
-        set_services(data);
-        console.log(services);
-      } catch (error) {
-        console.error("Failed to fetch services", error);
-      }
+  // ======================
+  // 🛠️ Event Handlers
+  // ======================
+  async function fetch_services() {
+    try {
+      const data = await Get_Services();
+      set_services(data);
+    } catch (error) {
+      console.error("Failed to fetch services", error);
     }
+  }
+
+  async function fetch_categories() {
+    try {
+      const data = await Get_Categories();
+      set_categories(data);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  }
+
+  async function fetch_products() {
+    try {
+      const data = await Get_All_Products();
+      console.log(products);
+      set_products(data);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  }
+
+  // ======================
+  // 🧩 Effects
+  // ======================
+  useEffect(() => {
     fetch_services();
+    fetch_categories();
+    fetch_products();
   }, []);
 
   return (
@@ -89,6 +129,34 @@ export default function Home() {
           </div>
         </div>
       </div>
+      {/* Shop */}
+      {categories.length > 0 && (
+        <div className="bg-white relative z-10 text-center py-10 md:py-28">
+          <h2 className="text-h1 mb-8 md:mb-20">Shop</h2>
+          <div className="flex flex-wrap gap-4 justify-center">
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/shop/${category.name.toLowerCase()}`}
+              >
+                <button className="uppercase font-bold tracking-wider hover:text-red-600">
+                  {category.name}
+                </button>
+              </Link>
+            ))}
+          </div>
+          <div>
+            {products.map((product) => (
+              <Link
+                key={product.id}
+                href={`/shop/${product.name.toLowerCase()}`}
+              >
+                <p>{product.name}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

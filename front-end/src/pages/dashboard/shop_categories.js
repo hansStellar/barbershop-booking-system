@@ -15,6 +15,10 @@ import {
   Update_Category,
   Delete_Category,
 } from "@/utils/Shop_Categories_Functions.js";
+import {
+  Delete_Products,
+  Get_Products_By_Category_ID,
+} from "@/utils/Shop_Products_Functions";
 
 ShopCategoriesPage.getLayout = function getLayout(page) {
   return <DashboardLayout>{page}</DashboardLayout>;
@@ -79,7 +83,17 @@ export default function ShopCategoriesPage() {
 
   // Handle deleting a category by id
   const handle_delete = async (id) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this category? If there are any products linked to it, they will also be permanently deleted",
+      )
+    )
+      return;
     try {
+      const products_with_same_id = await Get_Products_By_Category_ID(id);
+      const delete_products_with_same_id = await Delete_Products(
+        products_with_same_id.data,
+      );
       await Delete_Category(id);
       const data = await Get_Categories();
       set_categories(data);

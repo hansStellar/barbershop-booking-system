@@ -15,6 +15,7 @@ import {
   Update_Product,
   Delete_Product,
 } from "@/utils/Shop_Products_Functions.js";
+import { Get_Categories } from "@/utils/Shop_Categories_Functions";
 
 ShopProducts.getLayout = function getLayout(page) {
   return <DashboardLayout>{page}</DashboardLayout>;
@@ -34,6 +35,8 @@ export default function ShopProducts() {
   });
   const [edit_form, set_edit_form] = useState(null);
   const [error, set_error] = useState("");
+  const [categories, set_categories] = useState([]);
+  const [theres_categories, set_theres_categories] = useState(false);
 
   // Functions
   const fetch_products = async () => {
@@ -107,16 +110,37 @@ export default function ShopProducts() {
     }
   };
 
+  const fetch_categories = async () => {
+    try {
+      // Fetch on categories
+      const categories = await Get_Categories();
+
+      // Check if there's no categories
+      if (categories.length === 0 && Array.isArray(categories)) {
+        set_theres_categories(false);
+      } else {
+        set_categories(categories);
+        set_theres_categories(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // UseEffect
   useEffect(() => {
     fetch_products();
+    fetch_categories();
   }, []);
 
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Shop Categories</h2>
-        <Button onClick={() => set_show_create_modal(true)}>
+        <h2 className="text-xl font-bold">Shop Products</h2>
+        <Button
+          disabled={!theres_categories}
+          onClick={() => set_show_create_modal(true)}
+        >
           Create Product
         </Button>
       </div>
@@ -180,13 +204,23 @@ export default function ShopProducts() {
             value={create_form.description}
             onChange={handle_create_change}
           />
-          <Input
-            placeholder="Category ID"
+          <select
             name="category_id"
             value={create_form.category_id}
             onChange={handle_create_change}
             required
-          />
+            className="w-full px-3 py-2 border border-gray-600 rounded text-white bg-gray-900"
+          >
+            <option value="" disabled>
+              Select Category
+            </option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
           <div className="flex justify-end gap-2">
             <Button type="submit">Save</Button>
             <Button
