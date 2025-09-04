@@ -3,6 +3,7 @@
 @theme {
   --text-h1: 70px;
   --text-h2: 30px;
+  --text-small: 0.9rem;
   --font-bebas: "Bebas Neue", sans-serif;
   --font-crimson: "Crimson Text", serif;
 }
@@ -45,10 +46,19 @@ p {
   font-size: 1.2rem;
 }
 
+.btn-small {
+  padding: 4px 10px 4px;
+  font-size: 0.9rem;
+}
+
 .btn-primary {
   background: red;
 }
 
 .btn-secondary {
   background: blue;
+}
+
+.btn-accent {
+  background: yellow;
 }

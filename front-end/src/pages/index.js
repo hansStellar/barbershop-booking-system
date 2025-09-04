@@ -75,9 +75,9 @@ export default function Home() {
           Your browser does not support the video tag.
         </video>
         {/* Content */}
-        <div className="h-full flex justify-center items-center flex-col relative z-10">
+        <div className="h-full flex justify-center items-center flex-col relative z-10 text-center">
           <h3 className="text-h1 text-red-600 mb-4">
-            More than a haircut - it's a lifestyle
+            More than a haircut, <br /> it's a lifestyle
           </h3>
           <div className="flex flex-wrap justify-center gap-8 ">
             <a className="btn btn-large btn-primary">Book an Appointment</a>
@@ -112,11 +112,11 @@ export default function Home() {
         </div>
       </div>
       {/* Second Landscape */}
-      <div className="relative z-10 h-[600px] bg-black">
+      <div className="relative z-10 h-[800px] bg-black">
         {/* Image */}
         <img
           src="/second_landscape.jpg"
-          className="h-full w-full object-cover object-top z-0 opacity-50 pointer-events-none absolute top-0"
+          className="h-full w-full object-cover object-top z-0 opacity-30 pointer-events-none absolute top-0"
         />
         {/* Content */}
         <div className="container h-full flex justify-center items-center flex-col relative z-10 mx-auto text-center">
@@ -157,6 +157,25 @@ export default function Home() {
           </div>
         </div>
       )}
+      {/* Third Landscape */}
+      <div className="relative z-10 h-[800px] bg-black">
+        {/* Image */}
+        <img
+          src="/third_landscape.jpg"
+          className="h-full w-full object-cover z-0 opacity-30 pointer-events-none absolute top-0"
+        />
+        {/* Content */}
+        <div className="container h-full flex justify-center items-center flex-col relative z-10 mx-auto text-center">
+          <h3 className="text-h1 text-red-600 mb-8">
+            The chair is just <br />
+            the start of the story
+          </h3>
+          <div className="flex flex-wrap justify-center gap-8 ">
+            <a className="btn btn-large btn-primary">Our Story</a>
+            <a className="btn btn-large btn-secondary">Join Our Team</a>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

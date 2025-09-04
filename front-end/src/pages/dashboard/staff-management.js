@@ -46,29 +46,29 @@ export default function StaffManagement() {
     setNewEmployer((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Get Employers
+  const get_employers = async () => {
+    try {
+      const response = await Get_Employers();
+      setStaff(response);
+      console.log(staff);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Get Services
+  const get_services = async () => {
+    try {
+      const response = await Get_Services();
+      setServices(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    // Get Employers
-    const get_employers = async () => {
-      try {
-        const response = await Get_Employers();
-        setStaff(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    // Get Services
-    const get_services = async () => {
-      try {
-        const response = await Get_Services();
-        setServices(response);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     // Trigger the functions
-    console.log(services);
     get_employers();
     get_services();
   }, []);

@@ -18,7 +18,7 @@ export async function Get_Employers() {
     const response = await axios.get(
       "http://localhost:8000/employers/get_employers",
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.log(error);
     throw new Error("Failed to fetch employers");
