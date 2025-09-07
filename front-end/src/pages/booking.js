@@ -165,7 +165,7 @@ export default function Booking() {
       set_employees(response);
       setTimeout(() => {
         console.log(employees);
-      }, 100);
+      }, 500);
     } catch (error) {
       console.log(error);
     }

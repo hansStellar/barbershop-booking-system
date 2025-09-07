@@ -1,11 +1,14 @@
 import axios from "axios";
+import ramdom_id from "./Uuid_Maker.js";
 
-export async function Create_Employer(employerData) {
+export async function Create_Employer(employer_data) {
   try {
+    employer_data.id = ramdom_id();
     const response = await axios.post(
       "http://localhost:8000/employers/create_employer",
-      employerData,
+      employer_data,
     );
+
     return response;
   } catch (error) {
     const message = error.message;
