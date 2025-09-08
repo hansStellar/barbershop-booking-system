@@ -37,7 +37,15 @@ export default function Booking() {
   const selected_barber = employees.find(
     (emp) => emp.id === selected_barber_id,
   );
-  const available_days = selected_barber?.working_days || [];
+  const available_days =
+    selected_barber_id === null
+      ? employees.reduce((acc, emp) => {
+          emp.working_days.forEach((day) => {
+            if (!acc.includes(day)) acc.push(day);
+          });
+          return acc;
+        }, [])
+      : selected_barber?.working_days || [];
 
   // Steps
   const [current_step, set_current_step] = useState(0);
@@ -86,10 +94,9 @@ export default function Booking() {
 
     const days = [];
 
-    // Fill in previous month's trailing days
+    // Fill in previous empty cells with null
     for (let i = 0; i < start_day; i++) {
-      const date = new Date(year, month, -start_day + i + 1);
-      days.push({ date, isCurrentMonth: false });
+      days.push(null);
     }
 
     // Fill in current month's days
@@ -100,16 +107,6 @@ export default function Booking() {
         isCurrentMonth: true,
         isToday: date.toDateString() === new Date().toDateString(),
       });
-    }
-
-    // Fill in next month's leading days
-    while (days.length % 7 !== 0) {
-      const date = new Date(
-        year,
-        month + 1,
-        days.length - total_days - start_day + 1,
-      );
-      days.push({ date, isCurrentMonth: false });
     }
 
     return days;
@@ -391,21 +388,51 @@ export default function Booking() {
             <div className="mt-2 grid grid-cols-7 text-sm">
               {days.map((day, dayIdx) => (
                 <div
-                  key={day.date.toISOString()}
+                  key={day ? day.date.toISOString() : `empty-${dayIdx}`}
                   data-first-line={dayIdx <= 6 ? "" : undefined}
                   className="py-2 [&:not([data-first-line])]:border-t [&:not([data-first-line])]:border-white/10"
                 >
-                  <button
-                    type="button"
-                    data-is-today={day.isToday ? "" : undefined}
-                    data-is-selected={day.isSelected ? "" : undefined}
-                    data-is-current-month={day.isCurrentMonth ? "" : undefined}
-                    className="mx-auto flex size-8 items-center justify-center rounded-full data-[is-selected]:data-[is-today]:bg-indigo-500 data-[is-selected]:font-semibold data-[is-today]:font-semibold data-[is-selected]:text-white [&:not([data-is-selected])]:hover:bg-white/10 [&:not([data-is-selected])]:data-[is-today]:text-indigo-400 data-[is-selected]:[&:not([data-is-today])]:bg-white data-[is-selected]:[&:not([data-is-today])]:text-gray-900 [&:not([data-is-selected])]:[&:not([data-is-today])]:data-[is-current-month]:text-white [&:not([data-is-selected])]:[&:not([data-is-today])]:[&:not([data-is-current-month])]:text-gray-500"
-                  >
-                    <time dateTime={day.date.toISOString().split("T")[0]}>
-                      {day.date.getDate()}
-                    </time>
-                  </button>
+                  {day ? (
+                    <button
+                      type="button"
+                      disabled={
+                        !available_days.includes(
+                          day.date.toLocaleDateString("en-GB", {
+                            weekday: "long",
+                          }),
+                        )
+                      }
+                      data-is-today={day.isToday ? "" : undefined}
+                      data-is-selected={day.isSelected ? "" : undefined}
+                      className={`
+                        mx-auto flex size-8 items-center justify-center rounded-full
+                        data-[is-selected]:data-[is-today]:bg-indigo-500
+                        data-[is-selected]:font-semibold
+                        data-[is-today]:font-semibold
+                        data-[is-selected]:text-white
+                        [&:not([data-is-selected])]:hover:bg-white/10
+                        [&:not([data-is-selected])]:data-[is-today]:text-indigo-400
+                        data-[is-selected]:[&:not([data-is-today])]:bg-white
+                        data-[is-selected]:[&:not([data-is-today])]:text-gray-900
+                        [&:not([data-is-selected])]:[&:not([data-is-today])]:text-white
+                        ${
+                          !available_days.includes(
+                            day.date.toLocaleDateString("en-GB", {
+                              weekday: "long",
+                            }),
+                          )
+                            ? "opacity-30 cursor-not-allowed"
+                            : ""
+                        }
+                      `}
+                    >
+                      <time dateTime={day.date.toISOString().split("T")[0]}>
+                        {day.date.getDate()}
+                      </time>
+                    </button>
+                  ) : (
+                    <div className="h-8" />
+                  )}
                 </div>
               ))}
             </div>
