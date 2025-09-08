@@ -386,26 +386,83 @@ export default function Booking() {
               <div>Sun</div>
             </div>
             <div className="mt-2 grid grid-cols-7 text-sm">
-              {days.map((day, dayIdx) => (
-                <div
-                  key={day ? day.date.toISOString() : `empty-${dayIdx}`}
-                  data-first-line={dayIdx <= 6 ? "" : undefined}
-                  className="py-2 [&:not([data-first-line])]:border-t [&:not([data-first-line])]:border-white/10"
-                >
-                  {day ? (
+              {days.map((day, dayIdx) => {
+                if (!day) {
+                  return (
+                    <div
+                      key={`empty-${dayIdx}`}
+                      data-first-line={dayIdx <= 6 ? "" : undefined}
+                      className="py-2 [&:not([data-first-line])]:border-t [&:not([data-first-line])]:border-white/10"
+                    >
+                      <div className="h-8" />
+                    </div>
+                  );
+                }
+                // Updated is_past_day logic
+                const now = new Date();
+                const today_date = new Date(
+                  now.getFullYear(),
+                  now.getMonth(),
+                  now.getDate(),
+                );
+                const day_date = new Date(
+                  day.date.getFullYear(),
+                  day.date.getMonth(),
+                  day.date.getDate(),
+                );
+
+                let is_past_day = false;
+
+                if (day_date < today_date) {
+                  is_past_day = true;
+                } else if (day_date.getTime() === today_date.getTime()) {
+                  // Check current time vs. end of shift
+                  const day_name = day_date.toLocaleDateString("en-GB", {
+                    weekday: "long",
+                  });
+                  const barber = selected_barber || employees[0]; // fallback to first if none selected
+
+                  const work_slots = barber?.working_hours?.[day_name];
+
+                  if (work_slots && work_slots.length > 0) {
+                    const last_slot = work_slots[work_slots.length - 1]; // e.g., "06:00-10:00"
+                    const [, end_time_str] = last_slot.split("-");
+                    const [end_hour, end_minute] = end_time_str
+                      .split(":")
+                      .map(Number);
+                    const shift_end = new Date(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate(),
+                      end_hour,
+                      end_minute,
+                    );
+
+                    if (now > shift_end) {
+                      is_past_day = true;
+                    }
+                  } else {
+                    is_past_day = true; // no hours set for today
+                  }
+                }
+                const is_available = available_days.includes(
+                  day.date.toLocaleDateString("en-GB", {
+                    weekday: "long",
+                  }),
+                );
+                return (
+                  <div
+                    key={day.date.toISOString()}
+                    data-first-line={dayIdx <= 6 ? "" : undefined}
+                    className="py-2 [&:not([data-first-line])]:border-t [&:not([data-first-line])]:border-white/10"
+                  >
                     <button
                       type="button"
-                      disabled={
-                        !available_days.includes(
-                          day.date.toLocaleDateString("en-GB", {
-                            weekday: "long",
-                          }),
-                        )
-                      }
+                      disabled={is_past_day || !is_available}
                       data-is-today={day.isToday ? "" : undefined}
                       data-is-selected={day.isSelected ? "" : undefined}
                       className={`
-                        mx-auto flex size-8 items-center justify-center rounded-full
+                        mx-auto flex flex-col items-center justify-center rounded-full
                         data-[is-selected]:data-[is-today]:bg-indigo-500
                         data-[is-selected]:font-semibold
                         data-[is-today]:font-semibold
@@ -416,25 +473,24 @@ export default function Booking() {
                         data-[is-selected]:[&:not([data-is-today])]:text-gray-900
                         [&:not([data-is-selected])]:[&:not([data-is-today])]:text-white
                         ${
-                          !available_days.includes(
-                            day.date.toLocaleDateString("en-GB", {
-                              weekday: "long",
-                            }),
-                          )
+                          !is_available || is_past_day
                             ? "opacity-30 cursor-not-allowed"
                             : ""
                         }
                       `}
                     >
-                      <time dateTime={day.date.toISOString().split("T")[0]}>
-                        {day.date.getDate()}
-                      </time>
+                      <div className="flex flex-col items-center">
+                        <time dateTime={day.date.toISOString().split("T")[0]}>
+                          {day.date.getDate()}
+                        </time>
+                        {is_available && !is_past_day && (
+                          <div className="mt-1 h-0.5 w-2 rounded-full bg-green-500" />
+                        )}
+                      </div>
                     </button>
-                  ) : (
-                    <div className="h-8" />
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </section>
         </div>
