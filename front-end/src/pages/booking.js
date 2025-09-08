@@ -34,6 +34,10 @@ export default function Booking() {
   // Employes
   const [employees, set_employees] = useState([]);
   const [selected_barber_id, set_selected_barber_id] = useState(null);
+  const selected_barber = employees.find(
+    (emp) => emp.id === selected_barber_id,
+  );
+  const available_days = selected_barber?.working_days || [];
 
   // Steps
   const [current_step, set_current_step] = useState(0);
@@ -65,50 +69,70 @@ export default function Booking() {
 
   const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const days = [
-    { date: "2021-12-27" },
-    { date: "2021-12-28" },
-    { date: "2021-12-29" },
-    { date: "2021-12-30" },
-    { date: "2021-12-31" },
-    { date: "2022-01-01", isCurrentMonth: true },
-    { date: "2022-01-02", isCurrentMonth: true },
-    { date: "2022-01-03", isCurrentMonth: true },
-    { date: "2022-01-04", isCurrentMonth: true },
-    { date: "2022-01-05", isCurrentMonth: true },
-    { date: "2022-01-06", isCurrentMonth: true },
-    { date: "2022-01-07", isCurrentMonth: true },
-    { date: "2022-01-08", isCurrentMonth: true },
-    { date: "2022-01-09", isCurrentMonth: true },
-    { date: "2022-01-10", isCurrentMonth: true },
-    { date: "2022-01-11", isCurrentMonth: true },
-    { date: "2022-01-12", isCurrentMonth: true, isToday: true },
-    { date: "2022-01-13", isCurrentMonth: true },
-    { date: "2022-01-14", isCurrentMonth: true },
-    { date: "2022-01-15", isCurrentMonth: true },
-    { date: "2022-01-16", isCurrentMonth: true },
-    { date: "2022-01-17", isCurrentMonth: true },
-    { date: "2022-01-18", isCurrentMonth: true },
-    { date: "2022-01-19", isCurrentMonth: true },
-    { date: "2022-01-20", isCurrentMonth: true },
-    { date: "2022-01-21", isCurrentMonth: true, isSelected: true },
-    { date: "2022-01-22", isCurrentMonth: true },
-    { date: "2022-01-23", isCurrentMonth: true },
-    { date: "2022-01-24", isCurrentMonth: true },
-    { date: "2022-01-25", isCurrentMonth: true },
-    { date: "2022-01-26", isCurrentMonth: true },
-    { date: "2022-01-27", isCurrentMonth: true },
-    { date: "2022-01-28", isCurrentMonth: true },
-    { date: "2022-01-29", isCurrentMonth: true },
-    { date: "2022-01-30", isCurrentMonth: true },
-    { date: "2022-01-31", isCurrentMonth: true },
-    { date: "2022-02-01" },
-    { date: "2022-02-02" },
-    { date: "2022-02-03" },
-    { date: "2022-02-04" },
-    { date: "2022-02-05" },
-    { date: "2022-02-06" },
-  ];
+  // Calendar State
+  const today = new Date();
+  const [current_month, set_current_month] = useState(
+    new Date(today.getFullYear(), today.getMonth(), 1),
+  );
+
+  const get_days_in_month = (month_date) => {
+    const year = month_date.getFullYear();
+    const month = month_date.getMonth();
+    const start_date = new Date(year, month, 1);
+    const end_date = new Date(year, month + 1, 0);
+
+    const start_day = (start_date.getDay() + 6) % 7; // Adjust to make Monday=0, Sunday=6
+    const total_days = end_date.getDate();
+
+    const days = [];
+
+    // Fill in previous month's trailing days
+    for (let i = 0; i < start_day; i++) {
+      const date = new Date(year, month, -start_day + i + 1);
+      days.push({ date, isCurrentMonth: false });
+    }
+
+    // Fill in current month's days
+    for (let i = 1; i <= total_days; i++) {
+      const date = new Date(year, month, i);
+      days.push({
+        date,
+        isCurrentMonth: true,
+        isToday: date.toDateString() === new Date().toDateString(),
+      });
+    }
+
+    // Fill in next month's leading days
+    while (days.length % 7 !== 0) {
+      const date = new Date(
+        year,
+        month + 1,
+        days.length - total_days - start_day + 1,
+      );
+      days.push({ date, isCurrentMonth: false });
+    }
+
+    return days;
+  };
+
+  const days = get_days_in_month(current_month);
+
+  const go_to_previous_month = () => {
+    set_current_month(
+      new Date(current_month.getFullYear(), current_month.getMonth() - 1, 1),
+    );
+  };
+
+  const go_to_next_month = () => {
+    set_current_month(
+      new Date(current_month.getFullYear(), current_month.getMonth() + 1, 1),
+    );
+  };
+
+  const formatted_month_year = current_month.toLocaleDateString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   // ======================
   // 🛠️ Event Handlers
@@ -163,9 +187,6 @@ export default function Booking() {
     try {
       const response = await Get_Employers();
       set_employees(response);
-      setTimeout(() => {
-        console.log(employees);
-      }, 500);
     } catch (error) {
       console.log(error);
     }
@@ -198,6 +219,7 @@ export default function Booking() {
           Next
         </button>
       </div>
+
       {/* Progress Bar */}
       <nav aria-label="Progress" className="max-w-4xl mx-auto">
         <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
@@ -245,6 +267,7 @@ export default function Booking() {
           ))}
         </ol>
       </nav>
+
       {/* Select Service */}
       {current_step === 0 && (
         <div>
@@ -311,42 +334,37 @@ export default function Booking() {
                   <p className="text-sm text-gray-400"></p>
                 </div>
               </li>
-              {employees
-                .filter(
-                  (emp) =>
-                    selected_barber_id === null ||
-                    emp.id === selected_barber_id,
-                )
-                .map((employee) => (
-                  <li
-                    key={employee.id}
-                    className={`group flex items-center gap-x-4 rounded-xl px-4 py-2 cursor-pointer hover:bg-white/10 ${
-                      selected_barber_id === employee.id ? "bg-white/10" : ""
-                    }`}
-                    onClick={() => set_selected_barber_id(employee.id)}
-                  >
-                    <img
-                      alt={employee.name}
-                      src={employee.image_url}
-                      className="size-10 flex-none rounded-full outline outline-1 -outline-offset-1 outline-white/10"
-                    />
-                    <div className="flex-auto">
-                      <p className="text-white">{employee.name}</p>
-                      <p className="text-sm text-gray-400">Barber/Specialist</p>
-                    </div>
-                  </li>
-                ))}
+              {employees.map((employee) => (
+                <li
+                  key={employee.id}
+                  className={`group flex items-center gap-x-4 rounded-xl px-4 py-2 cursor-pointer hover:bg-white/10 ${
+                    selected_barber_id === employee.id ? "bg-white/10" : ""
+                  }`}
+                  onClick={() => set_selected_barber_id(employee.id)}
+                >
+                  <img
+                    alt={employee.name}
+                    src={employee.image_url}
+                    className="size-10 flex-none rounded-full outline outline-1 -outline-offset-1 outline-white/10"
+                  />
+                  <div className="flex-auto">
+                    <p className="text-white">{employee.name}</p>
+                    <p className="text-sm text-gray-400">Barber/Specialist</p>
+                  </div>
+                </li>
+              ))}
             </ol>
           </section>
 
           {/* Right Side */}
-          <div className="md:pl-14">
+          <section>
             <div className="flex items-center">
               <h2 className="flex-auto text-sm font-semibold text-white">
-                January 2022
+                {formatted_month_year}
               </h2>
               <button
                 type="button"
+                onClick={go_to_previous_month}
                 className="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-white"
               >
                 <span className="sr-only">Previous month</span>
@@ -354,6 +372,7 @@ export default function Booking() {
               </button>
               <button
                 type="button"
+                onClick={go_to_next_month}
                 className="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-white"
               >
                 <span className="sr-only">Next month</span>
@@ -361,18 +380,18 @@ export default function Booking() {
               </button>
             </div>
             <div className="mt-10 grid grid-cols-7 text-center text-xs/6 text-gray-400">
-              <div>M</div>
-              <div>T</div>
-              <div>W</div>
-              <div>T</div>
-              <div>F</div>
-              <div>S</div>
-              <div>S</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+              <div>Sun</div>
             </div>
             <div className="mt-2 grid grid-cols-7 text-sm">
               {days.map((day, dayIdx) => (
                 <div
-                  key={day.date}
+                  key={day.date.toISOString()}
                   data-first-line={dayIdx <= 6 ? "" : undefined}
                   className="py-2 [&:not([data-first-line])]:border-t [&:not([data-first-line])]:border-white/10"
                 >
@@ -383,14 +402,14 @@ export default function Booking() {
                     data-is-current-month={day.isCurrentMonth ? "" : undefined}
                     className="mx-auto flex size-8 items-center justify-center rounded-full data-[is-selected]:data-[is-today]:bg-indigo-500 data-[is-selected]:font-semibold data-[is-today]:font-semibold data-[is-selected]:text-white [&:not([data-is-selected])]:hover:bg-white/10 [&:not([data-is-selected])]:data-[is-today]:text-indigo-400 data-[is-selected]:[&:not([data-is-today])]:bg-white data-[is-selected]:[&:not([data-is-today])]:text-gray-900 [&:not([data-is-selected])]:[&:not([data-is-today])]:data-[is-current-month]:text-white [&:not([data-is-selected])]:[&:not([data-is-today])]:[&:not([data-is-current-month])]:text-gray-500"
                   >
-                    <time dateTime={day.date}>
-                      {day.date.split("-").pop().replace(/^0/, "")}
+                    <time dateTime={day.date.toISOString().split("T")[0]}>
+                      {day.date.getDate()}
                     </time>
                   </button>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       )}
 
