@@ -4,8 +4,13 @@ import { useEffect, useState } from "react";
 // Icons
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  DialogBackdrop,
+} from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 // Functions
 import { Post_Booking } from "@/utils/Bookings_Functions.js";
@@ -47,7 +52,72 @@ export default function Booking() {
         }, [])
       : selected_barber?.working_days || [];
 
+  // Modal state for date/time slots
+  const [show_modal, set_show_modal] = useState(false);
+  const [selected_date, set_selected_date] = useState(null);
+  const [available_slots, set_available_slots] = useState([]);
+
   // Steps
+  // Function to generate 15-min interval slots between two times
+  const get_time_slots = (start, end) => {
+    const [start_h, start_m] = start.split(":").map(Number);
+    const [end_h, end_m] = end.split(":").map(Number);
+
+    const slots = [];
+    let current = new Date(0, 0, 0, start_h, start_m);
+    const end_time = new Date(0, 0, 0, end_h, end_m);
+
+    while (current < end_time) {
+      const next = new Date(current.getTime() + 15 * 60000);
+      slots.push(
+        `${current.getHours().toString().padStart(2, "0")}:${current
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`,
+      );
+      current = next;
+    }
+    return slots;
+  };
+
+  // Handler for clicking a calendar date
+  const handle_date_click = (date_obj) => {
+    set_selected_date(date_obj);
+    const day_name = date_obj.toLocaleDateString("en-GB", {
+      weekday: "long",
+    });
+
+    let slots = [];
+
+    if (selected_barber_id === null) {
+      employees.forEach((emp) => {
+        const hours = emp.working_hours?.[day_name] || [];
+        hours.forEach((range) => {
+          const [start, end] = range.split("-");
+          slots.push(
+            ...get_time_slots(start, end).map((time) => ({
+              time,
+              barber: emp.name,
+            })),
+          );
+        });
+      });
+    } else {
+      const emp = employees.find((e) => e.id === selected_barber_id);
+      const hours = emp?.working_hours?.[day_name] || [];
+      hours.forEach((range) => {
+        const [start, end] = range.split("-");
+        slots.push(
+          ...get_time_slots(start, end).map((time) => ({
+            time,
+            barber: emp.name,
+          })),
+        );
+      });
+    }
+    set_available_slots(slots);
+    set_show_modal(true);
+  };
   const [current_step, set_current_step] = useState(0);
   const steps = [
     {
@@ -282,7 +352,7 @@ export default function Booking() {
                       />
                       <div className="min-w-0 flex-auto">
                         <h2 className="text-sm/6 font-semibold text-white">
-                          <span className="absolute inset-x-0 -top-px bottom-0" />
+                          <span className=" inset-x-0 -top-px bottom-0" />
                           {service.name}
                         </h2>
                         <p className="mt-1 w-[450px] flex text-xs/5 text-gray-400">
@@ -296,7 +366,20 @@ export default function Booking() {
                         <p className="">£{service.price}.00</p>
                         <p className="text-small">{service.duration}</p>
                       </div>
-                      <a className="btn btn-small btn-accent">Book</a>
+                      <button
+                        onClick={() => {
+                          set_service_selected(true);
+                          set_form_data((prev) => ({
+                            ...prev,
+                            service: service.name,
+                            price: service.price,
+                          }));
+                          set_current_step(1);
+                        }}
+                        className="bg-yellow-400 hover:bg-yellow-300 text-black font-semibold px-4 py-1 rounded"
+                      >
+                        Book
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -478,12 +561,13 @@ export default function Booking() {
                             : ""
                         }
                       `}
+                      onClick={() => handle_date_click(day.date)}
                     >
                       <div className="flex flex-col items-center">
                         <time dateTime={day.date.toISOString().split("T")[0]}>
                           {day.date.getDate()}
                         </time>
-                        {is_available && !is_past_day && (
+                        {is_available && (
                           <div className="mt-1 h-0.5 w-2 rounded-full bg-green-500" />
                         )}
                       </div>
@@ -663,6 +747,163 @@ export default function Booking() {
           </button>
         </div>
       </form>
+      {/* Modal for available time slots */}
+      <Dialog
+        open={show_modal}
+        onClose={set_show_modal}
+        className="relative z-10"
+      >
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-gray-900/50 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+        />
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <DialogPanel
+              transition
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl outline outline-1 -outline-offset-1 outline-white/10 transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+            >
+              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-indigo-500/10 sm:mx-0 sm:size-10">
+                    <ExclamationTriangleIcon
+                      aria-hidden="true"
+                      className="size-6 text-indigo-600"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                    <DialogTitle
+                      as="h3"
+                      className="text-base font-semibold text-gray-900"
+                    >
+                      Available Time Slots
+                    </DialogTitle>
+                    <div className="mt-4">
+                      <ul className="flex flex-wrap gap-2">
+                        {(() => {
+                          // Slot generation logic
+                          if (!selected_date) return null;
+                          const day_name = selected_date.toLocaleDateString(
+                            "en-GB",
+                            {
+                              weekday: "long",
+                            },
+                          );
+                          let slots = [];
+                          // Find selected service duration in minutes
+                          let duration = 30;
+                          if (form_data.service) {
+                            const found = services.find(
+                              (s) => s.name === form_data.service,
+                            );
+                            if (found && found.duration) {
+                              // Try to parse duration (e.g. "30 min" or "45")
+                              const match = String(found.duration).match(/\d+/);
+                              if (match) duration = parseInt(match[0], 10);
+                            }
+                          }
+                          // Helper: generate slots array for a working hour range
+                          const generateSlotsForRange = (
+                            start,
+                            end,
+                            staffName,
+                          ) => {
+                            const slotList = [];
+                            let [sh, sm] = start.split(":").map(Number);
+                            let [eh, em] = end.split(":").map(Number);
+                            let startTime = new Date(0, 0, 0, sh, sm);
+                            let endTime = new Date(0, 0, 0, eh, em);
+                            while (true) {
+                              let slotStart = new Date(startTime);
+                              let slotEnd = new Date(
+                                startTime.getTime() + duration * 60000,
+                              );
+                              if (slotEnd > endTime) break;
+                              slotList.push({
+                                time: slotStart.toTimeString().slice(0, 5),
+                                barber: staffName,
+                              });
+                              startTime = new Date(
+                                startTime.getTime() + 15 * 60000,
+                              );
+                            }
+                            return slotList;
+                          };
+                          if (selected_barber_id === null) {
+                            // Merge all employees' slots and remove duplicates by time
+                            employees.forEach((emp) => {
+                              const hours = emp.working_hours?.[day_name] || [];
+                              hours.forEach((range) => {
+                                const [start, end] = range.split("-");
+                                slots.push(
+                                  ...generateSlotsForRange(
+                                    start,
+                                    end,
+                                    emp.name,
+                                  ),
+                                );
+                              });
+                            });
+                            // Filter to unique slots by time string
+                            const uniqueSlotsMap = {};
+                            slots.forEach((slot) => {
+                              if (!uniqueSlotsMap[slot.time]) {
+                                uniqueSlotsMap[slot.time] = slot;
+                              }
+                            });
+                            slots = Object.values(uniqueSlotsMap);
+                            // Sort slots in chronological order
+                            slots.sort((a, b) => {
+                              const [ah, am] = a.time.split(":").map(Number);
+                              const [bh, bm] = b.time.split(":").map(Number);
+                              return ah * 60 + am - (bh * 60 + bm);
+                            });
+                          } else {
+                            const emp = employees.find(
+                              (e) => e.id === selected_barber_id,
+                            );
+                            const hours = emp?.working_hours?.[day_name] || [];
+                            hours.forEach((range) => {
+                              const [start, end] = range.split("-");
+                              slots.push(
+                                ...generateSlotsForRange(start, end, emp.name),
+                              );
+                            });
+                          }
+                          if (slots.length === 0) {
+                            return (
+                              <li className="text-gray-400">
+                                No available slots
+                              </li>
+                            );
+                          }
+                          return slots.map((slot, index) => (
+                            <li
+                              key={index}
+                              className="flex items-center justify-center border rounded px-3 py-2 text-sm text-gray-900"
+                            >
+                              {slot.time}
+                            </li>
+                          ));
+                        })()}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-100 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type="button"
+                  onClick={() => set_show_modal(false)}
+                  className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                >
+                  Close
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }
