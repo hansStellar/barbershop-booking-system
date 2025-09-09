@@ -533,6 +533,75 @@ export default function Booking() {
                     weekday: "long",
                   }),
                 );
+                // Calculate slot availability for the day
+                let has_available_slots = false;
+                if (is_available && !is_past_day) {
+                  const day_name = day.date.toLocaleDateString("en-GB", {
+                    weekday: "long",
+                  });
+                  let slots = [];
+                  let duration = 30;
+                  if (form_data.service) {
+                    const found = services.find(
+                      (s) => s.name === form_data.service,
+                    );
+                    if (found && found.duration) {
+                      const match = String(found.duration).match(/\d+/);
+                      if (match) duration = parseInt(match[0], 10);
+                    }
+                  }
+                  const generateSlotsForRange = (start, end, staffName) => {
+                    const slotList = [];
+                    let [sh, sm] = start.split(":").map(Number);
+                    let [eh, em] = end.split(":").map(Number);
+                    let startTime = new Date(0, 0, 0, sh, sm);
+                    let endTime = new Date(0, 0, 0, eh, em);
+                    while (true) {
+                      let slotStart = new Date(startTime);
+                      let slotEnd = new Date(
+                        startTime.getTime() + duration * 60000,
+                      );
+                      if (slotEnd > endTime) break;
+                      slotList.push({
+                        time: slotStart.toTimeString().slice(0, 5),
+                        barber: staffName,
+                      });
+                      startTime = new Date(startTime.getTime() + 15 * 60000);
+                    }
+                    return slotList;
+                  };
+                  if (selected_barber_id === null) {
+                    employees.forEach((emp) => {
+                      const hours = emp.working_hours?.[day_name] || [];
+                      hours.forEach((range) => {
+                        const [start, end] = range.split("-");
+                        slots.push(
+                          ...generateSlotsForRange(start, end, emp.name),
+                        );
+                      });
+                    });
+                    // Filter to unique slots by time string
+                    const uniqueSlotsMap = {};
+                    slots.forEach((slot) => {
+                      if (!uniqueSlotsMap[slot.time]) {
+                        uniqueSlotsMap[slot.time] = slot;
+                      }
+                    });
+                    slots = Object.values(uniqueSlotsMap);
+                  } else {
+                    const emp = employees.find(
+                      (e) => e.id === selected_barber_id,
+                    );
+                    const hours = emp?.working_hours?.[day_name] || [];
+                    hours.forEach((range) => {
+                      const [start, end] = range.split("-");
+                      slots.push(
+                        ...generateSlotsForRange(start, end, emp.name),
+                      );
+                    });
+                  }
+                  has_available_slots = slots.length > 0;
+                }
                 return (
                   <div
                     key={day.date.toISOString()}
@@ -567,7 +636,7 @@ export default function Booking() {
                         <time dateTime={day.date.toISOString().split("T")[0]}>
                           {day.date.getDate()}
                         </time>
-                        {is_available && (
+                        {is_available && has_available_slots && (
                           <div className="mt-1 h-0.5 w-2 rounded-full bg-green-500" />
                         )}
                       </div>
